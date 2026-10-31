@@ -142,9 +142,7 @@ export default function AppWidget({
           </Suspense>
         ) : null}
       </AppLink>
-      {linkedContainer && (
-        <DockerContainerToggle container={linkedContainer} isTiny={isTiny} isEditMode={isEditMode} />
-      )}
+      {linkedContainer && <DockerContainerToggle container={linkedContainer} isTiny={isTiny} isEditMode={isEditMode} />}
     </Box>
   );
 }
