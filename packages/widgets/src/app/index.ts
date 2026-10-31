@@ -22,6 +22,10 @@ export const { definition, componentLoader } = createWidgetDefinition("app", {
     return optionsBuilder.from(
       (factory) => ({
         appId: factory.app(),
+        dockerContainer: factory.dynamicSelect({
+          withDescription: true,
+          useOptions: (_query, _integrationIds, options) => useDockerContainerOptions(options),
+        }),
         openIn: factory.select({
           options: [
             {
@@ -105,10 +109,6 @@ export const { definition, componentLoader } = createWidgetDefinition("app", {
           searchable: true,
         }),
         pingEnabled: factory.switch({ defaultValue: settings.enableStatusByDefault }),
-        dockerContainer: factory.dynamicSelect({
-          withDescription: true,
-          useOptions: (_query, _integrationIds, options) => useDockerContainerOptions(options),
-        }),
       }),
       {
         pingEnabled: {
