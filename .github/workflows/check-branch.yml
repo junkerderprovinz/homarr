@@ -41,7 +41,7 @@ jobs:
           name: open-api-schema
           path: apps/docs/public/api/open-api-schema.json
       - run: git diff --stat
-      - run: bun run typecheck
+      - run: bun run turbo run typecheck --concurrency=2
       - name: Lint and format the changed files
         run: |
           changed=$(git diff --name-only --diff-filter=AM upstream-dev...HEAD -- '*.ts' '*.tsx' '*.json' '*.mdx')
