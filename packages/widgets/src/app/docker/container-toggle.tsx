@@ -62,10 +62,11 @@ export const DockerContainerToggle = ({ container: linked, isTiny, isEditMode }:
   const isPending = start.isPending || stop.isPending;
 
   return (
-    <Box pos="absolute" top={isTiny ? 4 : 8} right={isTiny ? 4 : 8}>
+    // Mirrors the status dot, centered on the same line, and keeps clear of a title at the top.
+    <Box pos="absolute" bottom={isTiny ? 6 : 4} left={isTiny ? 6 : 4}>
       <Tooltip label={canControl ? `${stateLabel} · ${actionLabel}` : `${container.name}: ${stateLabel}`}>
         <ActionIcon
-          size={isTiny ? "sm" : "md"}
+          size={isTiny ? "xs" : "sm"}
           radius="xl"
           variant="light"
           color={containerStateColorMap[container.state]}
