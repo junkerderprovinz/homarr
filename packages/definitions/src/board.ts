@@ -12,11 +12,13 @@ export const backgroundImageSizes = createDefinition(["cover", "contain"], {
   defaultValue: "cover",
 });
 export const layoutRoles = createDefinition(["mobile", "base", "custom"], { defaultValue: "custom" });
+export const appOpenModes = ["currentTab", "newTab", "newWindow"] as const;
 
 export type BackgroundImageAttachment = inferDefinitionType<typeof backgroundImageAttachments>;
 export type BackgroundImageRepeat = inferDefinitionType<typeof backgroundImageRepeats>;
 export type BackgroundImageSize = inferDefinitionType<typeof backgroundImageSizes>;
 export type LayoutRole = inferDefinitionType<typeof layoutRoles>;
+export type AppOpenMode = (typeof appOpenModes)[number];
 
 const MAX_LAYOUT_BREAKPOINT = 32767;
 const compareBoardLayouts = (

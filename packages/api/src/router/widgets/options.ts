@@ -21,6 +21,7 @@ export const optionsRouter = createTRPCRouter({
         board: {
           enableStatusByDefault: serverSettings.board.enableStatusByDefault,
           forceDisableStatus: serverSettings.board.forceDisableStatus,
+          defaultAppOpenMode: serverSettings.board.defaultAppOpenMode,
         },
       },
     };
