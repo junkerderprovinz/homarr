@@ -1,0 +1,55 @@
+name: Check branch
+
+# Runs the checks a pull request needs for any branch of this fork, and hands back the regenerated OpenAPI schema.
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to check
+        required: true
+      tests:
+        description: Vitest files or folders, separated by spaces
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+      - run: git fetch --no-tags https://github.com/homarr-labs/homarr.git dev:upstream-dev
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run scripts:update-openapi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: open-api-schema
+          path: apps/docs/public/api/open-api-schema.json
+      - run: git diff --stat
+      - run: bun run typecheck
+      - name: Lint and format the changed files
+        run: |
+          changed=$(git diff --name-only --diff-filter=AM upstream-dev...HEAD -- '*.ts' '*.tsx' '*.json' '*.mdx')
+          bunx oxfmt --check $changed
+          bunx oxlint $(echo "$changed" | grep -E '\.tsx?$')
+      - if: inputs.tests != ''
+        run: bunx vitest run $TESTS
+        env:
+          TESTS: ${{ inputs.tests }}
+          NODE_ENV: development
+          CI: true
