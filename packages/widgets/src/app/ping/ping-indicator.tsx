@@ -3,22 +3,19 @@ import { IconCheck, IconMinus, IconX } from "@tabler/icons-react";
 import { clientApi } from "@homarr/api/client";
 import { useI18n } from "@homarr/translation/client";
 
-import type { PingDotAction } from "./ping-dot";
 import { PingDot } from "./ping-dot";
 
 interface PingIndicatorProps {
   appId: string;
-  hint?: string;
-  action?: PingDotAction;
 }
 
-export const PingIndicator = ({ appId, ...dotProps }: PingIndicatorProps) => {
+export const PingIndicator = ({ appId }: PingIndicatorProps) => {
   const t = useI18n("common");
   const { data: pingResult, error } = clientApi.widget.app.ping.useQuery({ id: appId }, { refetchOnMount: false });
 
-  if (error) return <PingDot icon={IconX} color="red" tooltip={t("error")} {...dotProps} />;
+  if (error) return <PingDot icon={IconX} color="red" tooltip={t("error")} />;
 
-  if (!pingResult) return <PingDot icon={IconMinus} color="gray" tooltip={`${t("action.loading")}…`} {...dotProps} />;
+  if (!pingResult) return <PingDot icon={IconMinus} color="gray" tooltip={`${t("action.loading")}…`} />;
 
   const isError = "error" in pingResult || pingResult.statusCode >= 500;
 
@@ -31,7 +28,6 @@ export const PingIndicator = ({ appId, ...dotProps }: PingIndicatorProps) => {
           ? `${pingResult.statusCode} - ${pingResult.durationMs.toFixed(0)}ms`
           : pingResult.error
       }
-      {...dotProps}
     />
   );
 };

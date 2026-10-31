@@ -46,3 +46,22 @@
 .appWithUrl:hover > div.appIcon {
   background-color: var(--mantine-color-iconColor-filled-hover);
 }
+
+.containerDot {
+  border-radius: 100%;
+}
+
+.containerIcon,
+.containerToggle[data-icon] .containerDot,
+.containerToggle:not([data-disabled]):hover .containerDot {
+  display: none;
+}
+
+.containerToggle[data-icon] .containerIcon,
+.containerToggle:not([data-disabled]):hover .containerIcon {
+  display: block;
+}
+
+.containerToggle[data-disabled] {
+  cursor: default;
+}

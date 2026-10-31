@@ -135,7 +135,7 @@ export default function AppWidget({
             />
           </Flex>
         </AppDescriptionTooltip>
-        {showPing && !linkedContainer ? (
+        {showPing ? (
           <Suspense fallback={<PingDot icon={IconMinus} color="gray" tooltip={`${tCommon("action.loading")}…`} />}>
             <PingIndicator appId={app.id} />
           </Suspense>
