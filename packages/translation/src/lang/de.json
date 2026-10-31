@@ -2347,6 +2347,22 @@
             "tooltip": "Als Tooltip",
             "hidden": "Versteckt"
           }
+        },
+        "dockerContainer": {
+          "label": "Docker-Container",
+          "description": "Zeigt den Zustand des Containers auf der Kachel, mit einem Knopf zum Starten und Stoppen. Den Knopf sehen nur Admins.",
+          "placeholder": "Container auswählen",
+          "unavailable": "Docker ist nicht verfügbar. Aktivieren Sie Docker und melden Sie sich als Admin an, um einen Container auszuwählen."
+        }
+      },
+      "docker": {
+        "action": {
+          "start": "{name} starten",
+          "stop": "{name} stoppen"
+        },
+        "notification": {
+          "startFailed": "{name} konnte nicht gestartet werden",
+          "stopFailed": "{name} konnte nicht gestoppt werden"
         }
       },
       "error": {

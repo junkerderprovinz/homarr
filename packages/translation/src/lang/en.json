@@ -2351,6 +2351,22 @@
             "tooltip": "As tooltip",
             "hidden": "Hidden"
           }
+        },
+        "dockerContainer": {
+          "label": "Docker container",
+          "description": "Shows the container's state on the tile with a button to start or stop it. Only admins see the button.",
+          "placeholder": "Pick a container",
+          "unavailable": "Docker is not available. Enable it and sign in as an admin to pick a container."
+        }
+      },
+      "docker": {
+        "action": {
+          "start": "Start {name}",
+          "stop": "Stop {name}"
+        },
+        "notification": {
+          "startFailed": "Could not start {name}",
+          "stopFailed": "Could not stop {name}"
         }
       },
       "error": {

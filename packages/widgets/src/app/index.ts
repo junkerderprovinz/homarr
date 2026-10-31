@@ -10,13 +10,17 @@ import {
   IconTooltip,
 } from "@tabler/icons-react";
 
+import { clientApi } from "@homarr/api/client";
+import { useI18n } from "@homarr/translation/client";
+
 import { createWidgetDefinition } from "../definition";
 import { optionsBuilder } from "../options";
+import { formatLinkedDockerContainer } from "./docker/container-option";
 
 export const { definition, componentLoader } = createWidgetDefinition("app", {
   icon: IconApps,
   supportsAdvancedFocus: false,
-  queryKeys: [[["app", "byId"]], [["widget", "app", "ping"]]],
+  queryKeys: [[["app", "byId"]], [["widget", "app", "ping"]], [["docker", "getContainers"]]],
   createOptions(settings) {
     return optionsBuilder.from(
       (factory) => ({
@@ -104,6 +108,26 @@ export const { definition, componentLoader } = createWidgetDefinition("app", {
           searchable: true,
         }),
         pingEnabled: factory.switch({ defaultValue: settings.enableStatusByDefault }),
+        dockerContainer: factory.dynamicSelect({
+          withDescription: true,
+          useOptions() {
+            const t = useI18n("widget.app.option.dockerContainer");
+            const { data, isPending, isError } = clientApi.docker.getContainers.useQuery(undefined, {
+              retry: false,
+            });
+            const hasManyEndpoints = (data?.endpoints.length ?? 0) > 1;
+            return {
+              isPending,
+              error: isError ? t("unavailable") : undefined,
+              options: (data?.containers ?? [])
+                .map((container) => ({
+                  value: formatLinkedDockerContainer(container),
+                  label: hasManyEndpoints ? `${container.name} (${container.endpointName})` : container.name,
+                }))
+                .sort((first, second) => first.label.localeCompare(second.label)),
+            };
+          },
+        }),
       }),
       {
         pingEnabled: {
