@@ -41,7 +41,7 @@ export const { definition, componentLoader } = createWidgetDefinition("app", {
               label: (t) => t("widget.app.option.openIn.option.newWindow"),
             },
           ],
-          defaultValue: "newTab",
+          defaultValue: settings.defaultAppOpenMode,
           allowDeselect: false,
           withDescription: true,
         }),

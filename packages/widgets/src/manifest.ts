@@ -148,7 +148,7 @@ export const loadAllWidgetDefinitions = () => {
 
 export const reduceWidgetOptionsWithDefinition = (
   definition: WidgetDefinition,
-  settings: Pick<SettingsContextProps, "enableStatusByDefault" | "forceDisableStatus">,
+  settings: Pick<SettingsContextProps, "enableStatusByDefault" | "forceDisableStatus" | "defaultAppOpenMode">,
   currentValue: Record<string, unknown> = {},
 ) => {
   if ("kind" in definition && definition.kind === "app") {

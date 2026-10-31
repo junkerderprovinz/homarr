@@ -22,7 +22,7 @@ export type SettingsContextProps = Omit<
   "headerPreferences"
 > & { headerPreferences: HeaderPreferences } & Pick<
     ServerSettings["board"],
-    "enableStatusByDefault" | "forceDisableStatus"
+    "enableStatusByDefault" | "forceDisableStatus" | "defaultAppOpenMode"
   > &
   Pick<ServerSettings["user"], "enableGravatar"> & {
     branding: ServerSettings["branding"];
@@ -32,7 +32,7 @@ export interface PublicServerSettings {
   search: Pick<ServerSettings["search"], "defaultSearchEngineId">;
   board: Pick<
     ServerSettings["board"],
-    "homeBoardId" | "mobileHomeBoardId" | "enableStatusByDefault" | "forceDisableStatus"
+    "homeBoardId" | "mobileHomeBoardId" | "enableStatusByDefault" | "forceDisableStatus" | "defaultAppOpenMode"
   >;
   user: Pick<ServerSettings["user"], "enableGravatar">;
   branding: ServerSettings["branding"];
@@ -71,6 +71,7 @@ export const createSettings = ({
   headerPreferences: parseHeaderPreferences(user?.headerPreferences),
   enableStatusByDefault: serverSettings.board.enableStatusByDefault,
   forceDisableStatus: serverSettings.board.forceDisableStatus,
+  defaultAppOpenMode: serverSettings.board.defaultAppOpenMode,
   enableGravatar: serverSettings.user.enableGravatar,
   branding: parseBrandingSettings(serverSettings.branding),
 });

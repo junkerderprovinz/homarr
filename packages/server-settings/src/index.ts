@@ -1,4 +1,4 @@
-import type { ColorScheme } from "@homarr/definitions";
+import type { AppOpenMode, ColorScheme } from "@homarr/definitions";
 import type { SupportedLanguage } from "@homarr/translation";
 import { z } from "zod/v4";
 
@@ -143,6 +143,7 @@ export const defaultServerSettings = {
     mobileHomeBoardId: null as string | null,
     enableStatusByDefault: true,
     forceDisableStatus: false,
+    defaultAppOpenMode: "newTab" as AppOpenMode,
   },
   user: {
     enableGravatar: true,

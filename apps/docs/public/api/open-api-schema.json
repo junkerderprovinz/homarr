@@ -3951,13 +3951,22 @@
                     },
                     "forceDisableStatus": {
                       "type": "boolean"
+                    },
+                    "defaultAppOpenMode": {
+                      "type": "string",
+                      "enum": [
+                        "currentTab",
+                        "newTab",
+                        "newWindow"
+                      ]
                     }
                   },
                   "required": [
                     "homeBoardId",
                     "mobileHomeBoardId",
                     "enableStatusByDefault",
-                    "forceDisableStatus"
+                    "forceDisableStatus",
+                    "defaultAppOpenMode"
                   ],
                   "additionalProperties": false
                 }
@@ -4033,6 +4042,14 @@
                   },
                   "forceDisableStatus": {
                     "type": "boolean"
+                  },
+                  "defaultAppOpenMode": {
+                    "type": "string",
+                    "enum": [
+                      "currentTab",
+                      "newTab",
+                      "newWindow"
+                    ]
                   }
                 }
               }
@@ -4064,13 +4081,22 @@
                     },
                     "forceDisableStatus": {
                       "type": "boolean"
+                    },
+                    "defaultAppOpenMode": {
+                      "type": "string",
+                      "enum": [
+                        "currentTab",
+                        "newTab",
+                        "newWindow"
+                      ]
                     }
                   },
                   "required": [
                     "homeBoardId",
                     "mobileHomeBoardId",
                     "enableStatusByDefault",
-                    "forceDisableStatus"
+                    "forceDisableStatus",
+                    "defaultAppOpenMode"
                   ],
                   "additionalProperties": false
                 }

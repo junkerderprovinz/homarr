@@ -7017,6 +7017,10 @@
               "mobileLabel": "Global mobile board",
               "description": "Only public boards are available for selection"
             },
+            "defaultAppOpenMode": {
+              "label": "Open new app items in",
+              "description": "When adding an app item, it will open here by default"
+            },
             "status": {
               "title": "App status",
               "enableStatusByDefault": {

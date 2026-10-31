@@ -1,8 +1,9 @@
 "use client";
 
-import { Switch, Text } from "@mantine/core";
+import { Select, Switch, Text } from "@mantine/core";
 
 import type { RouterOutputs } from "@homarr/api";
+import { appOpenModes } from "@homarr/definitions";
 import type { UseFormReturnType } from "@homarr/form";
 import { useI18n } from "@homarr/translation/client";
 
@@ -18,6 +19,7 @@ interface BoardSettingsFormProps {
 export const BoardSettingsForm = ({ form, selectableBoards }: BoardSettingsFormProps) => {
   const tBoard = useI18n("management.page.settings.section.board");
   const tEntities = useI18n("common.entity");
+  const tOpenIn = useI18n("widget.app.option.openIn.option");
 
   return (
     <SectionCard title={tEntities("boards")}>
@@ -37,6 +39,14 @@ export const BoardSettingsForm = ({ form, selectableBoards }: BoardSettingsFormP
         boards={selectableBoards}
         {...form.getInputProps("mobileHomeBoardId")}
         withinPortal
+      />
+
+      <Select
+        label={tBoard("defaultAppOpenMode.label")}
+        description={tBoard("defaultAppOpenMode.description")}
+        data={appOpenModes.map((mode) => ({ value: mode, label: tOpenIn(mode) }))}
+        allowDeselect={false}
+        {...form.getInputProps("defaultAppOpenMode")}
       />
 
       <Text fw={500}>{tBoard("status.title")}</Text>
