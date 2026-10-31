@@ -1,22 +1,67 @@
 name: Own image
 
+# Builds the latest Homarr release with the feature branch on top, so the server keeps getting upstream fixes.
 on:
   push:
     branches: [build/app-docker-toggle]
+  schedule:
+    - cron: "17 4 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
+  packages: write
 
 env:
   TURBO_TELEMETRY_DISABLED: 1
+  IMAGE: ghcr.io/${{ github.repository }}
+  FEATURE: feat/app-docker-toggle
 
 jobs:
-  check:
+  versions:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    outputs:
+      release: ${{ steps.versions.outputs.release }}
+      feature: ${{ steps.versions.outputs.feature }}
+      tag: ${{ steps.versions.outputs.tag }}
+      built: ${{ steps.versions.outputs.built }}
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release=$(gh api repos/homarr-labs/homarr/releases/latest --jq .tag_name)
+          feature=$(gh api "repos/${{ github.repository }}/commits/$FEATURE" --jq .sha)
+          tag="${release#v}-${feature::7}"
+          built=false
+          docker manifest inspect "$IMAGE:$tag" >/dev/null 2>&1 && built=true
+          echo "release=$release" >>"$GITHUB_OUTPUT"
+          echo "feature=$feature" >>"$GITHUB_OUTPUT"
+          echo "tag=$tag" >>"$GITHUB_OUTPUT"
+          echo "built=$built" >>"$GITHUB_OUTPUT"
+          echo "$tag, already built: $built" >>"$GITHUB_STEP_SUMMARY"
+
+  image:
+    needs: versions
+    if: needs.versions.outputs.built == 'false' || github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: homarr-labs/homarr
+          ref: ${{ needs.versions.outputs.release }}
+          fetch-depth: 0
+      - name: Apply the feature branch
+        run: |
+          git fetch "https://github.com/${{ github.repository }}" "${{ needs.versions.outputs.feature }}"
+          base=$(git merge-base origin/dev FETCH_HEAD)
+          git -c user.name=github-actions -c user.email=github-actions@github.com cherry-pick "$base..FETCH_HEAD"
       - uses: actions/setup-node@v4
         with:
           node-version: 24.22.1
@@ -30,23 +75,20 @@ jobs:
         env:
           NODE_ENV: development
           CI: true
-
-  image:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64
-          tags: homarr:app-docker-toggle
-          outputs: type=docker,dest=${{ runner.temp }}/homarr.tar
-      - run: gzip -1 "$RUNNER_TEMP/homarr.tar"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: homarr-image
-          path: ${{ runner.temp }}/homarr.tar.gz
-          retention-days: 7
-          compression-level: 0
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ needs.versions.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ needs.versions.outputs.tag }}
