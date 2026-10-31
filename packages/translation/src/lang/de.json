@@ -2335,7 +2335,29 @@
             "tooltip": "Als Tooltip",
             "hidden": "Versteckt"
           }
+        },
+        "dockerContainer": {
+          "label": "Docker-Container",
+          "description": "Zeigt auf der Kachel einen Knopf, der den Container startet, wenn er gestoppt ist, und stoppt, solange er läuft. Nur Admins sehen den Knopf.",
+          "placeholder": "Container auswählen",
+          "disabled": "Setzen Sie ENABLE_DOCKER, um einen Container auszuwählen.",
+          "unavailable": "Die Docker-Container konnten nicht geladen werden."
         }
+      },
+      "docker": {
+        "action": {
+          "start": "{name} starten",
+          "stop": "{name} stoppen"
+        },
+        "notification": {
+          "startFailed": "{name} konnte nicht gestartet werden",
+          "stopFailed": "{name} konnte nicht gestoppt werden"
+        },
+        "switch": {
+          "start": "Container startet…",
+          "stop": "Container wird gestoppt…"
+        },
+        "stopped": "Der Container ist gestoppt"
       },
       "error": {
         "notFound": {
