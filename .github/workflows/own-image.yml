@@ -1,0 +1,52 @@
+name: Own image
+
+on:
+  push:
+    branches: [build/app-docker-toggle]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run turbo run typecheck lint --filter=@homarr/widgets --filter=@homarr/translation
+      - run: bunx oxfmt --check packages/widgets/src/app packages/translation/src/lang/en.json packages/translation/src/lang/de.json
+      - run: bunx vitest run packages/widgets/src/app
+        env:
+          NODE_ENV: development
+          CI: true
+
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          tags: homarr:app-docker-toggle
+          outputs: type=docker,dest=${{ runner.temp }}/homarr.tar
+      - run: gzip -1 "$RUNNER_TEMP/homarr.tar"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: homarr-image
+          path: ${{ runner.temp }}/homarr.tar.gz
+          retention-days: 7
+          compression-level: 0
