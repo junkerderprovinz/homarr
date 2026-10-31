@@ -2350,7 +2350,7 @@
         },
         "dockerContainer": {
           "label": "Docker-Container",
-          "description": "Zeigt den Zustand des Containers als Punkt auf der Kachel. Ein Klick darauf startet oder stoppt den Container. Nur Admins sehen den Punkt.",
+          "description": "Zeigt auf der Kachel einen Play- oder Stopp-Knopf, der den Container startet oder stoppt. Seine Farbe zeigt den Zustand des Containers. Nur Admins sehen den Knopf.",
           "placeholder": "Container auswählen",
           "unavailable": "Docker ist nicht verfügbar. Aktivieren Sie Docker und melden Sie sich als Admin an, um einen Container auszuwählen."
         }

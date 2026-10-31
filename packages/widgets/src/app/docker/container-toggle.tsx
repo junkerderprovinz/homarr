@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Box, Tooltip, UnstyledButton } from "@mantine/core";
-import { IconPower } from "@tabler/icons-react";
+import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 
 import { clientApi } from "@homarr/api/client";
 import type { ContainerState } from "@homarr/docker";
 import { containerStateColorMap } from "@homarr/docker/shared";
 import { showErrorNotification } from "@homarr/notifications";
-import { useSettings } from "@homarr/settings";
 import { useI18n } from "@homarr/translation/client";
 
 import classes from "../app.module.css";
@@ -66,7 +65,6 @@ interface DockerContainerToggleProps {
 
 export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode }: DockerContainerToggleProps) => {
   const t = useI18n();
-  const { pingIconsEnabled } = useSettings();
   const { data } = clientApi.docker.getContainers.useQuery(
     { endpointIds: [linked.endpointId] },
     { refetchInterval: 30_000 },
@@ -88,6 +86,7 @@ export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode
   const stateLabel = t(`docker.field.state.option.${container.state}`);
   const actionLabel = t(`widget.app.docker.action.${isActive ? "stop" : "start"}`, { name: container.name });
   const color = isPending ? "gray" : containerStateColorMap[container.state];
+  const Icon = isActive ? IconPlayerStopFilled : IconPlayerPlayFilled;
 
   return (
     // Sits left of the ping dot, or in its place when pinging is off.
@@ -99,7 +98,6 @@ export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode
           p={6}
           aria-label={actionLabel}
           data-disabled={!isEnabled || undefined}
-          data-icon={pingIconsEnabled || undefined}
           onClick={() => {
             if (!isEnabled) return;
             (isActive ? stop : start).mutate(
@@ -112,13 +110,7 @@ export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode
             );
           }}
         >
-          <Box className={classes.containerDot} bg={color} w={10} h={10} />
-          <IconPower
-            className={classes.containerIcon}
-            style={{ width: 12, height: 12 }}
-            strokeWidth={3}
-            color={`var(--mantine-color-${color}-filled)`}
-          />
+          <Icon style={{ width: 12, height: 12 }} color={`var(--mantine-color-${color}-filled)`} />
         </UnstyledButton>
       </Tooltip>
     </Box>
