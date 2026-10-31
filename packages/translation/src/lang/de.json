@@ -6969,6 +6969,10 @@
               "mobileLabel": "Globales Mobil Board",
               "description": "Nur öffentliche Boards stehen zur Auswahl"
             },
+            "defaultAppOpenMode": {
+              "label": "Neue App-Elemente öffnen in",
+              "description": "Beim Hinzufügen eines App-Elements wird es standardmäßig hier geöffnet"
+            },
             "status": {
               "title": "App Status",
               "enableStatusByDefault": {
