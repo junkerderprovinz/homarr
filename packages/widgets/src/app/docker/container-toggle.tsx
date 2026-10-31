@@ -1,7 +1,6 @@
 "use client";
 
-import { ActionIcon, Box, Tooltip } from "@mantine/core";
-import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
+import { IconCheck, IconMinus, IconX } from "@tabler/icons-react";
 
 import { clientApi } from "@homarr/api/client";
 import type { ContainerState } from "@homarr/docker";
@@ -9,6 +8,8 @@ import { containerStateColorMap } from "@homarr/docker/shared";
 import { showErrorNotification } from "@homarr/notifications";
 import { useI18n } from "@homarr/translation/client";
 
+import { PingDot } from "../ping/ping-dot";
+import { PingIndicator } from "../ping/ping-indicator";
 import type { LinkedDockerContainer } from "./container-option";
 
 const activeStates: ContainerState[] = ["running", "restarting", "paused"];
@@ -34,11 +35,13 @@ const useToggleAction = (action: "start" | "stop", name: string) => {
 
 interface DockerContainerToggleProps {
   container: LinkedDockerContainer;
-  isTiny: boolean;
+  pingAppId: string | null;
   isEditMode: boolean;
 }
 
-export const DockerContainerToggle = ({ container: linked, isTiny, isEditMode }: DockerContainerToggleProps) => {
+// Turns the status dot into the switch: it keeps the ping color when pinging is on and shows the container state
+// otherwise.
+export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode }: DockerContainerToggleProps) => {
   const t = useI18n();
   const { data } = clientApi.docker.getContainers.useQuery(
     { endpointIds: [linked.endpointId] },
@@ -50,37 +53,35 @@ export const DockerContainerToggle = ({ container: linked, isTiny, isEditMode }:
   const container = data?.containers.find(
     ({ endpointId, name }) => endpointId === linked.endpointId && name === linked.name,
   );
-  if (!container) return null;
+  if (!container) return pingAppId ? <PingIndicator appId={pingAppId} /> : null;
+
+  if (start.isPending || stop.isPending) {
+    return <PingDot icon={IconMinus} color="gray" tooltip={`${t("common.action.loading")}…`} />;
+  }
 
   const canControl =
     data?.endpoints.find(({ id }) => id === linked.endpointId)?.capabilities.includes("lifecycle") ?? false;
   const isActive = activeStates.includes(container.state);
-  const mutation = isActive ? stop : start;
   const stateLabel = t(`docker.field.state.option.${container.state}`);
   const actionLabel = t(`widget.app.docker.action.${isActive ? "stop" : "start"}`, { name: container.name });
-  const Icon = isActive ? IconPlayerStopFilled : IconPlayerPlayFilled;
-  const isPending = start.isPending || stop.isPending;
+  const action =
+    canControl && !isEditMode
+      ? {
+          label: actionLabel,
+          onClick: () =>
+            (isActive ? stop : start).mutate({ targets: [{ endpointId: container.endpointId, id: container.id }] }),
+        }
+      : undefined;
+  const hint = action ? `${stateLabel} · ${actionLabel}` : `${container.name}: ${stateLabel}`;
+
+  if (pingAppId) return <PingIndicator appId={pingAppId} hint={hint} action={action} />;
 
   return (
-    // Mirrors the status dot, centered on the same line, and keeps clear of a title at the top.
-    <Box pos="absolute" bottom={isTiny ? 6 : 4} left={isTiny ? 6 : 4}>
-      <Tooltip label={canControl ? `${stateLabel} · ${actionLabel}` : `${container.name}: ${stateLabel}`}>
-        <ActionIcon
-          size={isTiny ? "xs" : "sm"}
-          radius="xl"
-          variant="light"
-          color={containerStateColorMap[container.state]}
-          aria-label={actionLabel}
-          loading={isPending}
-          data-disabled={isEditMode || !canControl || undefined}
-          onClick={() => {
-            if (isEditMode || !canControl) return;
-            mutation.mutate({ targets: [{ endpointId: container.endpointId, id: container.id }] });
-          }}
-        >
-          <Icon size="60%" />
-        </ActionIcon>
-      </Tooltip>
-    </Box>
+    <PingDot
+      icon={isActive ? IconCheck : IconX}
+      color={containerStateColorMap[container.state]}
+      tooltip={hint}
+      action={action}
+    />
   );
 };

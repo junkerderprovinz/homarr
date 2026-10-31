@@ -67,6 +67,8 @@ export default function AppWidget({
     options.dockerContainer && session?.user.permissions.includes("admin")
       ? parseLinkedDockerContainer(options.dockerContainer.value)
       : null;
+  const showPing =
+    options.pingEnabled && !settings.forceDisableStatus && !board.disableStatus && Boolean(app.pingUrl ?? app.href);
 
   return (
     <Box h="100%" w="100%" pos="relative" style={{ "--mantine-scale": 1 / layoutScale }}>
@@ -133,16 +135,19 @@ export default function AppWidget({
             />
           </Flex>
         </AppDescriptionTooltip>
-        {options.pingEnabled &&
-        !settings.forceDisableStatus &&
-        !board.disableStatus &&
-        Boolean(app.pingUrl ?? app.href) ? (
+        {showPing && !linkedContainer ? (
           <Suspense fallback={<PingDot icon={IconMinus} color="gray" tooltip={`${tCommon("action.loading")}…`} />}>
             <PingIndicator appId={app.id} />
           </Suspense>
         ) : null}
       </AppLink>
-      {linkedContainer && <DockerContainerToggle container={linkedContainer} isTiny={isTiny} isEditMode={isEditMode} />}
+      {linkedContainer && (
+        <DockerContainerToggle
+          container={linkedContainer}
+          pingAppId={showPing ? app.id : null}
+          isEditMode={isEditMode}
+        />
+      )}
     </Box>
   );
 }
