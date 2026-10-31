@@ -2354,7 +2354,7 @@
         },
         "dockerContainer": {
           "label": "Docker container",
-          "description": "Adds a play or stop button to the tile that starts or stops the container. Its color shows the container's state. Only admins see it.",
+          "description": "Adds a button to the tile that shows play while the container runs and stop while it is stopped. Clicking it starts or stops the container. Only admins see it.",
           "placeholder": "Pick a container",
           "unavailable": "Docker is not available. Enable it and sign in as an admin to pick a container."
         }

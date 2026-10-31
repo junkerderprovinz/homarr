@@ -6,7 +6,6 @@ import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react"
 
 import { clientApi } from "@homarr/api/client";
 import type { ContainerState } from "@homarr/docker";
-import { containerStateColorMap } from "@homarr/docker/shared";
 import { showErrorNotification } from "@homarr/notifications";
 import { useI18n } from "@homarr/translation/client";
 
@@ -85,17 +84,17 @@ export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode
   const isEnabled = canControl && !isEditMode && !isPending;
   const stateLabel = t(`docker.field.state.option.${container.state}`);
   const actionLabel = t(`widget.app.docker.action.${isActive ? "stop" : "start"}`, { name: container.name });
-  const color = isPending ? "gray" : containerStateColorMap[container.state];
-  const Icon = isActive ? IconPlayerStopFilled : IconPlayerPlayFilled;
+  const Icon = isActive ? IconPlayerPlayFilled : IconPlayerStopFilled;
 
   return (
     // Sits left of the ping dot, or in its place when pinging is off.
-    <Box pos="absolute" bottom={4} right={pingAppId ? 20 : 4} display="flex">
+    <Box pos="absolute" bottom={3} right={pingAppId ? 20 : 4} display="flex">
       <Tooltip label={isEnabled ? `${stateLabel} · ${actionLabel}` : `${container.name}: ${stateLabel}`}>
         <UnstyledButton
           className={classes.containerToggle}
           display="flex"
           p={6}
+          opacity={isPending ? 0.5 : 1}
           aria-label={actionLabel}
           data-disabled={!isEnabled || undefined}
           onClick={() => {
@@ -110,7 +109,7 @@ export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode
             );
           }}
         >
-          <Icon style={{ width: rem(12), height: rem(12) }} color={`var(--mantine-color-${color}-filled)`} />
+          <Icon style={{ width: rem(12), height: rem(12) }} />
         </UnstyledButton>
       </Tooltip>
     </Box>
