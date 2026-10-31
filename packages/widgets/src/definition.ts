@@ -121,7 +121,7 @@ export interface WidgetDefinition {
   integrationsRequired?: boolean;
   maxIntegrations?: number;
   createOptions: (
-    settings: Pick<SettingsContextProps, "enableStatusByDefault" | "forceDisableStatus">,
+    settings: Pick<SettingsContextProps, "enableStatusByDefault" | "forceDisableStatus" | "defaultAppOpenMode">,
   ) => WidgetOptionsRecord;
   errors?: Partial<
     Record<
@@ -201,6 +201,6 @@ export type WidgetOptionsRecordOf<TKind extends WidgetKind> = WidgetImports[TKin
  */
 export interface WidgetOptionsSettings {
   server: {
-    board: Pick<ServerSettings["board"], "enableStatusByDefault" | "forceDisableStatus">;
+    board: Pick<ServerSettings["board"], "enableStatusByDefault" | "forceDisableStatus" | "defaultAppOpenMode">;
   };
 }

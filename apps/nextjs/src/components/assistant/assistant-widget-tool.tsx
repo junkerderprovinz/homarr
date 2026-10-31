@@ -34,7 +34,7 @@ interface AssistantIntegration extends IntegrationSelectOption {
 export const getAssistantWidgetConfiguration = (
   definition: WidgetDefinition,
   args: ConfigureWidgetArgs,
-  settings: Pick<SettingsContextProps, "enableStatusByDefault" | "forceDisableStatus">,
+  settings: Pick<SettingsContextProps, "enableStatusByDefault" | "forceDisableStatus" | "defaultAppOpenMode">,
   integrations: AssistantIntegration[],
 ) => {
   const integrationSupport = "supportedIntegrations" in definition;

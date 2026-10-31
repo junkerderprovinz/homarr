@@ -88,7 +88,7 @@ describe("widget manifest promise stability", () => {
 
   it("preserves every widget option default", async () => {
     const definitions = await loadAllWidgetDefinitions();
-    const settings = { enableStatusByDefault: true, forceDisableStatus: false };
+    const settings = { enableStatusByDefault: true, forceDisableStatus: false, defaultAppOpenMode: "newTab" as const };
 
     for (const definition of definitions.values()) {
       const options = definition.createOptions(settings);

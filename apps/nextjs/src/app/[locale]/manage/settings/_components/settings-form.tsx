@@ -9,7 +9,7 @@ import type { RouterOutputs } from "@homarr/api";
 import { clientApi } from "@homarr/api/client";
 import { revalidatePathActionAsync } from "@homarr/common/client";
 import { env } from "@homarr/common/env";
-import { colorSchemes } from "@homarr/definitions";
+import { appOpenModes, colorSchemes } from "@homarr/definitions";
 import { useZodForm } from "@homarr/form";
 import { showErrorNotification, showSuccessNotification } from "@homarr/notifications";
 import type { ServerSettings, defaultServerSettingsKeys } from "@homarr/server-settings";
@@ -37,6 +37,7 @@ const settingsFormSchema = z.object({
   mobileHomeBoardId: z.string().nullable(),
   enableStatusByDefault: z.boolean(),
   forceDisableStatus: z.boolean(),
+  defaultAppOpenMode: z.enum(appOpenModes),
   enableGravatar: z.boolean(),
   defaultSearchEngineId: z.string().nullable(),
   defaultColorScheme: z.enum(colorSchemes),
@@ -56,6 +57,7 @@ const buildInitialValues = (initialData: ServerSettings): FormValues => ({
   mobileHomeBoardId: initialData.board.mobileHomeBoardId,
   enableStatusByDefault: initialData.board.enableStatusByDefault,
   forceDisableStatus: initialData.board.forceDisableStatus,
+  defaultAppOpenMode: initialData.board.defaultAppOpenMode,
   enableGravatar: initialData.user.enableGravatar,
   defaultSearchEngineId: initialData.search.defaultSearchEngineId,
   defaultColorScheme: initialData.appearance.defaultColorScheme,
@@ -114,12 +116,19 @@ export const SettingsForm = ({ initialData, selectableBoards, selectableSearchEn
       },
       {
         settingsKey: "board",
-        when: changed("homeBoardId", "mobileHomeBoardId", "enableStatusByDefault", "forceDisableStatus"),
+        when: changed(
+          "homeBoardId",
+          "mobileHomeBoardId",
+          "enableStatusByDefault",
+          "forceDisableStatus",
+          "defaultAppOpenMode",
+        ),
         value: {
           homeBoardId: values.homeBoardId,
           mobileHomeBoardId: values.mobileHomeBoardId,
           enableStatusByDefault: values.enableStatusByDefault,
           forceDisableStatus: values.forceDisableStatus,
+          defaultAppOpenMode: values.defaultAppOpenMode,
         },
       },
       { settingsKey: "user", when: changed("enableGravatar"), value: { enableGravatar: values.enableGravatar } },

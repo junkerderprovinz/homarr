@@ -158,6 +158,7 @@ export default async function Layout(props: {
             mobileHomeBoardId: serverSettings.board.mobileHomeBoardId,
             enableStatusByDefault: serverSettings.board.enableStatusByDefault,
             forceDisableStatus: serverSettings.board.forceDisableStatus,
+            defaultAppOpenMode: serverSettings.board.defaultAppOpenMode,
           },
           search: { defaultSearchEngineId: serverSettings.search.defaultSearchEngineId },
           user: { enableGravatar: serverSettings.user.enableGravatar },

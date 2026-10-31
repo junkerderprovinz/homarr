@@ -11,6 +11,7 @@ import {
   updateServerSettingByKeyAsync,
 } from "@homarr/db/queries";
 import { boards, serverSettings } from "@homarr/db/schema";
+import { appOpenModes } from "@homarr/definitions";
 import type { ServerSettings } from "@homarr/server-settings";
 import {
   authBrandingSchema,
@@ -26,6 +27,7 @@ const boardServerSettingsSchema = z.object({
   mobileHomeBoardId: z.string().nullable(),
   enableStatusByDefault: z.boolean(),
   forceDisableStatus: z.boolean(),
+  defaultAppOpenMode: z.enum(appOpenModes),
 }) satisfies z.ZodType<ServerSettings["board"]>;
 
 const boardServerSettingsUpdateSchema = boardServerSettingsSchema.partial();
@@ -132,7 +134,7 @@ export const serverSettingsRouter = createTRPCRouter({
       mcp: {
         enabled: true,
         description:
-          "Update global board defaults. Requires admin permission. Optional fields: homeBoardId, mobileHomeBoardId, enableStatusByDefault, forceDisableStatus. Home board IDs must reference public boards or be null",
+          "Update global board defaults. Requires admin permission. Optional fields: homeBoardId, mobileHomeBoardId, enableStatusByDefault, forceDisableStatus, defaultAppOpenMode. Home board IDs must reference public boards or be null",
       },
     })
     .input(boardServerSettingsUpdateSchema)

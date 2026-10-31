@@ -6,7 +6,7 @@ import { loadAllWidgetDefinitions } from "@homarr/widgets/manifest";
 
 import { getAssistantWidgetConfiguration } from "./assistant-widget-tool";
 
-const settings = { enableStatusByDefault: true, forceDisableStatus: false };
+const settings = { enableStatusByDefault: true, forceDisableStatus: false, defaultAppOpenMode: "newTab" as const };
 const widgetDefinitions = await loadAllWidgetDefinitions();
 
 const getWidgetDefinition = (kind: WidgetKind) => {
