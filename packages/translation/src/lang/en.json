@@ -2354,7 +2354,7 @@
         },
         "dockerContainer": {
           "label": "Docker container",
-          "description": "Shows the container's state on the tile with a button to start or stop it. Only admins see the button.",
+          "description": "Adds a dot to the tile that shows the container's state. Clicking it starts or stops the container. Only admins see it.",
           "placeholder": "Pick a container",
           "unavailable": "Docker is not available. Enable it and sign in as an admin to pick a container."
         }
