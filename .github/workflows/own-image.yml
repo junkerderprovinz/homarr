@@ -15,7 +15,7 @@ permissions:
 env:
   TURBO_TELEMETRY_DISABLED: 1
   IMAGE: ghcr.io/${{ github.repository }}
-  FEATURE: feat/app-docker-toggle
+  FEATURE: own/app-docker-toggle
 
 jobs:
   versions:
