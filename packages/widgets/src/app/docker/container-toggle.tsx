@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Tooltip, UnstyledButton } from "@mantine/core";
+import { Box, rem, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 
 import { clientApi } from "@homarr/api/client";
@@ -110,7 +110,7 @@ export const DockerContainerToggle = ({ container: linked, pingAppId, isEditMode
             );
           }}
         >
-          <Icon style={{ width: 12, height: 12 }} color={`var(--mantine-color-${color}-filled)`} />
+          <Icon style={{ width: rem(12), height: rem(12) }} color={`var(--mantine-color-${color}-filled)`} />
         </UnstyledButton>
       </Tooltip>
     </Box>
