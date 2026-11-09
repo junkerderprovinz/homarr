@@ -17,7 +17,7 @@ export const PingIndicator = ({ appId, containerSwitch }: PingIndicatorProps) =>
   const { data: pingResult, error } = clientApi.widget.app.ping.useQuery({ id: appId }, { refetchOnMount: false });
 
   if (containerSwitch) {
-    return <PingDot icon={IconLoader2} color="orange" tooltip={tSwitch(containerSwitch)} />;
+    return <PingDot icon={IconLoader2} color="orange" tooltip={tSwitch(containerSwitch)} pulse />;
   }
 
   if (error) return <PingDot icon={IconX} color="red" tooltip={t("error")} />;

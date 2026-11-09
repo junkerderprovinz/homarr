@@ -15,8 +15,8 @@ import type { LinkedDockerContainer } from "./container-option";
 const activeStates: ContainerState[] = ["running", "restarting", "paused"];
 
 // An app usually needs a while after its container starts before it answers, so the ping is repeated until it does.
-const pingRetryInterval = 3_000;
-const pingRetryLimit = 90_000;
+const pingRetryInterval = 1_000;
+const pingRetryLimit = 180_000;
 
 const useToggleAction = (action: "start" | "stop", name: string) => {
   const t = useI18n();
