@@ -1,0 +1,100 @@
+name: Own image
+
+# Builds the latest Homarr release with the feature branch on top, so the server keeps getting upstream fixes.
+on:
+  push:
+    branches: [build/app-docker-toggle]
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+  IMAGE: ghcr.io/${{ github.repository_owner }}/homarr-docker-toggle
+  FEATURE: own/app-docker-toggle
+
+jobs:
+  versions:
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.versions.outputs.release }}
+      feature: ${{ steps.versions.outputs.feature }}
+      tag: ${{ steps.versions.outputs.tag }}
+      built: ${{ steps.versions.outputs.built }}
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release=$(gh api repos/homarr-labs/homarr/releases/latest --jq .tag_name)
+          feature=$(gh api "repos/${{ github.repository }}/commits/$FEATURE" --jq .sha)
+          tag="${release#v}-${feature::7}"
+          built=false
+          docker manifest inspect "$IMAGE:$tag" >/dev/null 2>&1 && built=true
+          echo "release=$release" >>"$GITHUB_OUTPUT"
+          echo "feature=$feature" >>"$GITHUB_OUTPUT"
+          echo "tag=$tag" >>"$GITHUB_OUTPUT"
+          echo "built=$built" >>"$GITHUB_OUTPUT"
+          echo "$tag, already built: $built" >>"$GITHUB_STEP_SUMMARY"
+
+  image:
+    needs: versions
+    if: needs.versions.outputs.built == 'false' || github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: homarr-labs/homarr
+          ref: ${{ needs.versions.outputs.release }}
+          fetch-depth: 0
+      - name: Apply the feature branch
+        run: |
+          git fetch "https://github.com/${{ github.repository }}" "${{ needs.versions.outputs.feature }}"
+          base=$(git merge-base origin/dev FETCH_HEAD)
+          release=$(git rev-parse HEAD)
+          git -c user.name=github-actions -c user.email=github-actions@github.com cherry-pick --empty=drop "$base..FETCH_HEAD"
+          # Commits that upstream has taken drop out, so the run fails once nothing of our own is left.
+          if [ "$(git rev-parse HEAD)" = "$release" ]; then
+            echo "::error::${{ needs.versions.outputs.release }} already contains $FEATURE. Switch the server back to ghcr.io/homarr-labs/homarr:latest."
+            exit 1
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run turbo run typecheck lint --filter=@homarr/widgets --filter=@homarr/translation
+      - run: bunx oxfmt --check packages/widgets/src/app packages/translation/src/lang/en.json packages/translation/src/lang/de.json
+      - run: bunx vitest run packages/widgets/src/app
+        env:
+          NODE_ENV: development
+          CI: true
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ needs.versions.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ needs.versions.outputs.tag }}
